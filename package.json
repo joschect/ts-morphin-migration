@@ -13,8 +13,11 @@
     "gen": "plop"
   },
   "devDependencies": {
-    "just-stack-single-lib": "^1.0.0",
+    "beachball": "^1.12.1",
     "just-scripts": "^0.27.0",
-    "beachball": "^1.12.1"
+    "just-stack-single-lib": "^1.0.0"
+  },
+  "dependencies": {
+    "ts-morph": "^7.0.0"
   }
 }
