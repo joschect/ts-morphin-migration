@@ -4,6 +4,9 @@
   "license": "MIT",
   "main": "lib-commonjs/index.js",
   "module": "lib/index.js",
+  "bin": {
+    "migration": "./bin/migration.js"
+  },
   "scripts": {
     "build": "just-scripts build",
     "just": "just-scripts",

@@ -1,1 +1,1 @@
-export * from './hello';
+import {Project} from 'ts-morph';
