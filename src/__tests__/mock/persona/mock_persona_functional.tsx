@@ -6,6 +6,8 @@ export const RenderPersona = (props: any) => {
   return (
     <div>
       <Persona>Persona</Persona>
+      {/* include self closing persona check */ }
+      <Persona text={"PersonaName"}/>
     </div>
   );
 };

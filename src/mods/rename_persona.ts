@@ -74,7 +74,7 @@ export function ReplacePersonaSizeImport(file: SourceFile) {
       imp.getNamedImports().forEach(val => {
         if (val.getText() === "PersonaSize") {
           found = true;
-          val.renameAlias("PersonaSize");
+          val.renameAlias("AvatarSize");
           val.remove();
         }
       });
@@ -82,7 +82,7 @@ export function ReplacePersonaSizeImport(file: SourceFile) {
   });
   if (found) {
     AppendNamedImportIfNoExist(file, "office-ui-fabric-react/lib/Avatar", [
-      "PersonaSize"
+      "AvatarSize"
     ]);
   }
 }

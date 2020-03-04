@@ -1,7 +1,7 @@
-import { SourceFile, SyntaxKind, JsxOpeningElement, JsxSelfClosingElement } from "ts-morph";
+import { SourceFile, SyntaxKind, JsxOpeningElement, JsxSelfClosingElement, Node } from "ts-morph";
 
 function findJsxTag(files: SourceFile[], tag: string) {
-  let instances: JsxOpeningElement | JsxSelfClosingElement[] = [];
+  let instances: (JsxOpeningElement | JsxSelfClosingElement)[] = [];
   files.forEach(file => {
     instances.concat(findJsxTagInFile(file, tag));
   });
