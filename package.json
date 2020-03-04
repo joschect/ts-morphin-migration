@@ -2,8 +2,7 @@
   "name": "ts-morphin-migration-single",
   "version": "0.1.0",
   "license": "MIT",
-  "main": "lib-commonjs/index.js",
-  "module": "lib/index.js",
+  "main": "lib/index.js",
   "bin": {
     "migration": "./bin/migration.js"
   },
@@ -11,6 +10,7 @@
     "build": "just-scripts build",
     "just": "just-scripts",
     "start": "just-scripts start",
+    "start-test": "just-scripts jest:watch",
     "test": "just-scripts test",
     "change": "beachball change",
     "gen": "plop"
@@ -21,6 +21,9 @@
     "just-stack-single-lib": "^1.0.0"
   },
   "dependencies": {
+    "@types/react": "^16.9.23",
+    "office-ui-fabric-react": "^7.98.3",
+    "react": "^16.13.0",
     "ts-morph": "^7.0.0"
   }
 }
