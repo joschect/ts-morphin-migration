@@ -1,9 +1,13 @@
 import { Project, SyntaxKind, JsxOpeningElement } from "ts-morph";
+import { CommandParser } from "./command";
 
-const args = process.argv[2];
+const command = new CommandParser().parseArgs(process.argv);
+if (command.shouldExit) {
+  process.exit(1);
+}
 
 const project = new Project();
-project.addSourceFilesAtPaths(`${process.cwd()}/${args}/**/*.tsx`);
+project.addSourceFilesAtPaths(`${process.cwd()}/${command.path}/**/*.tsx`);
 const files = project.getSourceFiles();
 console.log(files.length);
 files.forEach(file => {
@@ -19,10 +23,5 @@ files.forEach(file => {
         }
       }
     }
-    
   });
 });
-
-
-console.log(`${process.cwd()}/${args}/**/*.tsx`);
-
