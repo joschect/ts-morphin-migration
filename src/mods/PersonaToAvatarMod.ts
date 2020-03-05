@@ -86,3 +86,7 @@ export function ReplacePersonaSizeImport(file: SourceFile) {
     ]);
   }
 }
+
+export function RenamePersonaProp(file: SourceFile) {
+
+}

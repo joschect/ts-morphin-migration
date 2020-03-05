@@ -9,7 +9,7 @@ import {
   ReplacePersonaImport,
   ReplaceIPersonaPropsImport,
   ReplacePersonaSizeImport
-} from "../../mods/rename_persona";
+} from "../../mods/PersonaToAvatarMod";
 import { utilities } from "../../utilities";
 const personaPath = "/**/__tests__/mock/**/persona/**/*.tsx";
 
@@ -41,7 +41,7 @@ describe("utilities test", () => {
       });
       file.forEachDescendant(val => {
         switch (val.getKind()) {
-          case SyntaxKind.InterfaceDeclaration:
+          case SyntaxKind.InterfaceDeclaration:{
             let t_val = val as InterfaceDeclaration;
             const struct = t_val.getStructure();
             expect(
@@ -49,6 +49,11 @@ describe("utilities test", () => {
                 return val === "IPersonaProps";
               })
             ).toBe(false);
+            break;
+          }
+          case SyntaxKind.TypeReference: {
+            expect((val as TypeReferenceNode).getText()).not.toEqual("IPersonaProps");
+          }
         }
       });
     });
@@ -58,17 +63,17 @@ describe("utilities test", () => {
     const file = project.getSourceFileOrThrow("mock_persona_with_props.tsx");
     ReplacePersonaSizeImport(file);
 
-    file.forEachDescendant(desc => {
+    file.forEachDescendant(val => {
       // I believe that these are really the only two cases that a reference to PersonaSize
       // can be used. If we find others, there are other case statements that should be added
-      switch (desc.getKind()) {
+      switch (val.getKind()) {
         case SyntaxKind.TypeReference: {
-          let tdesc = desc as TypeReferenceNode;
+          let tdesc = val as TypeReferenceNode;
           expect(tdesc.getText()).not.toEqual("PersonaSize");
           break;
         }
         case SyntaxKind.PropertyAccessExpression: {
-          let tdesc = desc as PropertyAccessExpression;
+          let tdesc = val as PropertyAccessExpression;
           expect(tdesc.getFirstChild()?.getText()).not.toEqual("PersonaSize");
           break;
         }
