@@ -13,7 +13,7 @@ import {
 import { utilities } from "../../utilities";
 const personaPath = "/**/__tests__/mock/**/persona/**/*.tsx";
 
-describe("utilities test", () => {
+describe("Rename Persona", () => {
   let project: Project;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe("utilities test", () => {
   });
 
   it("can replace persona with avatar", () => {
-    const file = project.getSourceFileOrThrow("mock_persona_functional.tsx");
+    const file = project.getSourceFileOrThrow("m_function.tsx");
     ReplacePersonaImport(file);
     file.getImportDeclarations().forEach(imp => {
       imp.getNamedImports().forEach(name => {
@@ -33,7 +33,7 @@ describe("utilities test", () => {
   });
 
   it("can replace IPersonaProps with AvatarProps", () => {
-    const file = project.getSourceFileOrThrow("mock_persona_interface.tsx");
+    const file = project.getSourceFileOrThrow("m_interface.tsx");
     ReplaceIPersonaPropsImport(file);
     file.getImportDeclarations().forEach(imp => {
       imp.getNamedImports().forEach(name => {
@@ -60,7 +60,7 @@ describe("utilities test", () => {
   });
 
   it("can replace PersonaSize with AvatarSize", () => {
-    const file = project.getSourceFileOrThrow("mock_persona_with_props.tsx");
+    const file = project.getSourceFileOrThrow("m_with_personasize.tsx");
     ReplacePersonaSizeImport(file);
 
     file.forEachDescendant(val => {

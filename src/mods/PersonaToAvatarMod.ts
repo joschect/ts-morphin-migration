@@ -1,4 +1,5 @@
-import { SourceFile } from "ts-morph";
+import { SourceFile, JsxAttributeStructure } from "ts-morph";
+import {utilities} from '../utilities';
 
 const personaPath = "office-ui-fabric-react/lib/Persona";
 
@@ -87,6 +88,23 @@ export function ReplacePersonaSizeImport(file: SourceFile) {
   }
 }
 
-export function RenamePersonaProp(file: SourceFile) {
+export function RenamePrimaryTextProp(file: SourceFile) {
+  // Should this fix the naming if the Persona Component has already been renamed to Avatar
+  const elements = utilities.findJsxTagInFile(file, "Persona");
+  elements.forEach(val => {
+    let att = val.getAttribute('primaryText');
+    if(att) {
+      att.set({name: 'text'})
+    }
+  })
+
+
+}
+export function RenameRenderPersonaCoin(file: SourceFile) {
+
+
+}
+export function RenameRenderCoin(file: SourceFile) {
+
 
 }
