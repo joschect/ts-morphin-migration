@@ -1,5 +1,15 @@
-import { SourceFile, JsxAttributeStructure } from "ts-morph";
-import {utilities} from '../utilities';
+import {
+  SourceFile,
+  JsxAttributeStructure,
+  SyntaxKind,
+  JsxSpreadAttribute,
+  VariableDeclaration,
+  VariableDeclarationList,
+  VariableStatement,
+  VariableDeclarationKind,
+  ts
+} from "ts-morph";
+import { utilities } from "../utilities";
 
 const personaPath = "office-ui-fabric-react/lib/Persona";
 
@@ -49,6 +59,8 @@ export function ReplacePersonaImport(file: SourceFile) {
 }
 
 export function ReplaceIPersonaPropsImport(file: SourceFile) {
+  // Figure out if I should actually make this change
+  // TODO need to test with a variety of things, maybe one that serves as a passthrough
   let found = false;
   file.getImportDeclarations().forEach(imp => {
     if (imp.getModuleSpecifierValue() === personaPath) {
@@ -92,19 +104,77 @@ export function RenamePrimaryTextProp(file: SourceFile) {
   // Should this fix the naming if the Persona Component has already been renamed to Avatar
   const elements = utilities.findJsxTagInFile(file, "Persona");
   elements.forEach(val => {
-    let att = val.getAttribute('primaryText');
-    if(att) {
-      att.set({name: 'text'})
+    let att = val.getAttribute("primaryText");
+    if (att) {
+      att.set({ name: "text" });
+    } else {
+      const atts = val.getAttributes();
+      atts.forEach(a => {
+        if (a.getKind() === SyntaxKind.JsxSpreadAttribute) {
+          const id = (a as JsxSpreadAttribute).getFirstChildByKind(
+            SyntaxKind.Identifier
+          );
+          if (id) {
+            // If the type of the property has the attribute that we are looking for, then do what needs to be done.
+            if (
+              id
+                .getType()
+                .getProperties()
+                .some(typeVal => {
+                  return typeVal.getName() === "primaryText";
+                })
+            ) {
+              const def = id.getDefinitions();
+              if (def.length === 1) {
+                switch (def[0].getKind()) {
+                  case ts.ScriptElementKind.constElement:
+                  case ts.ScriptElementKind.letElement:
+                  case ts.ScriptElementKind.variableElement: {
+                    // We are explicitly looking for the declaration of this const, variable, or let
+                    const node = def[0].getDeclarationNode();
+                    if (
+                      node &&
+                      node.getKind() === SyntaxKind.VariableDeclaration
+                    ) {
+                      const tDef = node as VariableDeclaration;
+
+                      const st = tDef.getStructure();
+                      const par = tDef.getParent().getParent();
+                      if (par.getKind() === SyntaxKind.VariableStatement) {
+                        if (
+                          !(par as VariableStatement).getFirstDescendant(
+                            val => {
+                                return val.getKind() === SyntaxKind.Identifier && val.getText() === "__migPersonaProps";
+                            }
+                          )
+                        ) {
+                          (par as VariableStatement).addDeclaration({
+                            name: `{primaryText, ...__migPersonaProps}`,
+                            initializer: st.name
+                          });
+                        }
+                        id.replaceWithText("__migPersonaProps");
+                        val.addAttribute({
+                          name: "text",
+                          initializer: "{primaryText}"
+                        });
+                      }
+                    }
+                    break;
+                  }
+                  case ts.ScriptElementKind.parameterElement: {
+                    const tDef: any = def[0].getNode();
+                    console.log(def[0].getContainerKind());
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
     }
-  })
-
-
+  });
 }
-export function RenameRenderPersonaCoin(file: SourceFile) {
-
-
-}
-export function RenameRenderCoin(file: SourceFile) {
-
-
-}
+export function RenameRenderPersonaCoin(file: SourceFile) {}
+export function RenameRenderCoin(file: SourceFile) {}

@@ -1,4 +1,10 @@
-import { SourceFile, SyntaxKind, JsxOpeningElement, JsxSelfClosingElement, Node } from "ts-morph";
+import {
+  SourceFile,
+  SyntaxKind,
+  JsxOpeningElement,
+  JsxSelfClosingElement,
+  ImportDeclaration
+} from "ts-morph";
 
 function findJsxTag(files: SourceFile[], tag: string) {
   let instances: (JsxOpeningElement | JsxSelfClosingElement)[] = [];
@@ -31,7 +37,6 @@ function renameImport(file: SourceFile, originalImport: string, renamedImport: s
         return val.getText() === originalImport;
       });
     });
-    expect(imps.length).toEqual(1);
     imps[0].getNamedImports().forEach(name => {
       if(name.getText()=== originalImport) {
         name.renameAlias(renamedImport);
@@ -39,6 +44,35 @@ function renameImport(file: SourceFile, originalImport: string, renamedImport: s
       }
     })
     imps[0].addNamedImport(renamedImport);
+}
+
+/**
+ * 
+ * @param file File to search through
+ * @param pathOrRegex If a string is given, it will do an exact match, otherwise it will use regex
+ */
+function getImportsByPath(file: SourceFile, pathOrRegex: string | RegExp): ImportDeclaration[] | undefined {
+  let imps: ImportDeclaration[] =[];
+  if(typeof pathOrRegex === 'string') {
+    imps = file.getImportDeclarations().filter(cond => {
+      return cond.getModuleSpecifierValue() === pathOrRegex;
+    })
+  } else {
+    imps = file.getImportDeclarations().filter(cond => {
+      return pathOrRegex.test(cond.getModuleSpecifierValue());
+    })
+  }
+
+  return imps.length > 0 ? imps : undefined;
+}
+
+function repathImport(imp: ImportDeclaration, replacementString: string, regex?: RegExp) {
+  if(regex) {
+    const current = imp.getModuleSpecifierValue();
+    imp.setModuleSpecifier(current.replace(regex, replacementString))
+  } else {
+    imp.setModuleSpecifier(replacementString);
+  }
 }
 
 function applyCodeMods(files: SourceFile[], mod: (file: SourceFile) => void) {
@@ -52,5 +86,7 @@ export const utilities = {
   findJsxTag,
   findJsxTagInFile,
   renameImport,
-  applyCodeMods
+  repathImport,
+  applyCodeMods,
+  getImportByPath: getImportsByPath
 };
