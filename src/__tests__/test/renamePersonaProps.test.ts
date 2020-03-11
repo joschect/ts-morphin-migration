@@ -29,7 +29,6 @@ describe("Rename Persona Props test", () => {
     const file = project.getSourceFileOrThrow("mPersonaProps.tsx");
     RenamePrimaryTextProp(file);
     const elements = utilities.findJsxTagInFile(file, "Persona");
-    console.log(file.getText());
     elements.forEach(val => {
       expect(val.getAttribute("primaryText")).not.toBeTruthy();
     })

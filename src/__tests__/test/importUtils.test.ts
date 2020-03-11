@@ -53,24 +53,27 @@ describe("Import Utilities test", () => {
     const imps = utilities.getImportByPath(file, /office\-ui\-fabric\-react/);
 
     utilities.repathImport(imps![0], replacementString);
-    console.log(file.getText());
     expect(
       file.getImportStringLiterals().some(val => {
         return val.getLiteralValue() === replacementString;
       })
     ).toBe(true);
   });
+
   it("can replace a partial import path", () => {
     const replacementRegex = /office\-ui\-fabric\-react/;
     const file = project.getSourceFileOrThrow(fileName);
     const imps = utilities.getImportByPath(file, /office\-ui\-fabric\-react/);
 
     utilities.repathImport(imps![0], "NewPath", replacementRegex);
-    console.log(file.getText());
     expect(
       file.getImportStringLiterals().some(val => {
         return val.getLiteralValue() === "NewPath/lib/Button";
       })
     ).toBe(true);
   });
+
+  it("can replace all imports in a file", ()=> {
+
+  })
 });

@@ -1,5 +1,7 @@
-import { Project, SyntaxKind, JsxOpeningElement } from "ts-morph";
+import { Project } from "ts-morph";
 import { CommandParser } from "./command";
+import {utilities} from "./utilities";
+import {RepathOufrImports} from './mods/RenameImport';
 
 const command = new CommandParser().parseArgs(process.argv);
 if (command.shouldExit) {
@@ -9,19 +11,5 @@ if (command.shouldExit) {
 const project = new Project();
 project.addSourceFilesAtPaths(`${process.cwd()}/${command.path}/**/*.tsx`);
 const files = project.getSourceFiles();
-console.log(files.length);
-files.forEach(file => {
-  file.forEachDescendant(val => {
-    switch (val.getKind()) {
-      case SyntaxKind.JsxOpeningElement:
-      case SyntaxKind.JsxSelfClosingElement: {
-        console.log("yayaayyy");
-        if (
-          (val as JsxOpeningElement).getTagNameNode().getText() === "ComboBox"
-        ) {
-          console.log("bad bad bad");
-        }
-      }
-    }
-  });
-});
+
+utilities.applyCodeMods(files, RepathOufrImports);

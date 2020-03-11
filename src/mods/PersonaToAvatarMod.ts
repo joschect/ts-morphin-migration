@@ -164,7 +164,6 @@ export function RenamePrimaryTextProp(file: SourceFile) {
                   }
                   case ts.ScriptElementKind.parameterElement: {
                     const tDef: any = def[0].getNode();
-                    console.log(def[0].getContainerKind());
                     break;
                   }
                 }
