@@ -54,7 +54,7 @@ function renameImport(file: SourceFile, originalImport: string, renamedImport: s
 function getImportsByPath(file: SourceFile, pathOrRegex: string | RegExp): ImportDeclaration[] {
   let imps: ImportDeclaration[] =[];
   try {
-    if (typeof pathOrRegex === "string") {
+    if (typeof pathOrRegex === 'string') {
       imps = file.getImportDeclarations().filter(cond => {
         return cond.getModuleSpecifierValue() === pathOrRegex;
       });

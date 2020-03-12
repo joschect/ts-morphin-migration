@@ -6,8 +6,10 @@ import {
   VariableDeclaration,
   VariableDeclarationList,
   VariableStatement,
+  ParameterDeclaration,
   VariableDeclarationKind,
-  ts
+  ts,
+  Node
 } from "ts-morph";
 import { utilities } from "../utilities";
 
@@ -100,6 +102,15 @@ export function ReplacePersonaSizeImport(file: SourceFile) {
   }
 }
 
+// Gets the parent that is a direct descendant of a block
+// Which should allow for better inserting
+function getBlockContainer(node: Node<ts.Node>) {
+  return node.getFirstAncestor(ans => {
+    const ansPar = ans.getParent();
+    return ansPar?.getKind() === SyntaxKind.Block;
+  });
+}
+
 export function RenamePrimaryTextProp(file: SourceFile) {
   // Should this fix the naming if the Persona Component has already been renamed to Avatar
   const elements = utilities.findJsxTagInFile(file, "Persona");
@@ -144,7 +155,10 @@ export function RenamePrimaryTextProp(file: SourceFile) {
                         if (
                           !(par as VariableStatement).getFirstDescendant(
                             val => {
-                                return val.getKind() === SyntaxKind.Identifier && val.getText() === "__migPersonaProps";
+                              return (
+                                val.getKind() === SyntaxKind.Identifier &&
+                                val.getText() === "__migPersonaProps"
+                              );
                             }
                           )
                         ) {
@@ -163,7 +177,32 @@ export function RenamePrimaryTextProp(file: SourceFile) {
                     break;
                   }
                   case ts.ScriptElementKind.parameterElement: {
-                    const tDef: any = def[0].getNode();
+                    const tDef = def[0];
+                    const bl = getBlockContainer(val);
+                    const p = bl?.getParentIfKind(SyntaxKind.Block);
+                    const insIndex = bl?.getChildIndex();
+                    if (insIndex === undefined) {
+                      throw "asdfasdf";
+                    }
+
+                    if (!p?.getVariableStatement("__migPersonaProps")) {
+                      console.log("inserting");
+                      p?.insertVariableStatement(insIndex, {
+                        declarations: [
+                          {
+                            name: "{primaryText, ...__migPersonaProps}",
+                            initializer: tDef.getName(),
+                            type: VariableDeclarationKind.Const
+                          }
+                        ]
+                      });
+                    }
+
+                    id.replaceWithText("__migPersonaProps");
+                    val.addAttribute({
+                      name: "text",
+                      initializer: "{primaryText}"
+                    });
                     break;
                   }
                 }

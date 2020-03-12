@@ -24,7 +24,7 @@ export const RenderLetPersona = (props: any ) => {
   let propsTest = {onRenderCoin: renderCoin, primaryText: "LetPersona"}
   return (
     <div>
-      <Persona {...propsTest}id="ld">Persona</Persona>
+      <Persona {...propsTest}id="l">Persona</Persona>
       {/* include self closing persona check */ }
       <Persona {...propsTest}/>
     </div>
@@ -34,9 +34,20 @@ export const RenderLetPersona = (props: any ) => {
 export const RenderPersonaProps = (props: IPersonaProps ) => {
   return (
     <div>
-      <Persona {...props} id="pd">Persona</Persona>
+      <Persona {...props} id="pl">Persona</Persona>
       {/* include self closing persona check */ }
       <Persona {...props}/>
     </div>
   );
 };
+
+export function RenderPersonaPropsFunc(props: IPersonaProps) {
+  return (
+    <div>
+      <Persona {...props} id="pf">Persona</Persona>
+      {/* include self closing persona check */ }
+      <Persona {...props}/>
+    </div>
+  );
+
+}
