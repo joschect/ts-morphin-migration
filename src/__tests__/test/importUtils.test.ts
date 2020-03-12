@@ -23,7 +23,7 @@ describe("Import Utilities test", () => {
   it("only finds exact matches", () => {
     const file = project.getSourceFileOrThrow(fileName);
     const imp = utilities.getImportByPath(file, rootPath);
-    expect(imp).toBeFalsy();
+    expect(imp.length).toEqual(0);
   });
 
   it("can find a single import based on a regex string match", () => {
@@ -73,7 +73,4 @@ describe("Import Utilities test", () => {
     ).toBe(true);
   });
 
-  it("can replace all imports in a file", ()=> {
-
-  })
 });

@@ -13,3 +13,4 @@ project.addSourceFilesAtPaths(`${process.cwd()}/${command.path}/**/*.tsx`);
 const files = project.getSourceFiles();
 
 utilities.applyCodeMods(files, RepathOufrImports);
+project.save();

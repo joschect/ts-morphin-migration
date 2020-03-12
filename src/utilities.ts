@@ -51,19 +51,23 @@ function renameImport(file: SourceFile, originalImport: string, renamedImport: s
  * @param file File to search through
  * @param pathOrRegex If a string is given, it will do an exact match, otherwise it will use regex
  */
-function getImportsByPath(file: SourceFile, pathOrRegex: string | RegExp): ImportDeclaration[] | undefined {
+function getImportsByPath(file: SourceFile, pathOrRegex: string | RegExp): ImportDeclaration[] {
   let imps: ImportDeclaration[] =[];
-  if(typeof pathOrRegex === 'string') {
-    imps = file.getImportDeclarations().filter(cond => {
-      return cond.getModuleSpecifierValue() === pathOrRegex;
-    })
-  } else {
-    imps = file.getImportDeclarations().filter(cond => {
-      return pathOrRegex.test(cond.getModuleSpecifierValue());
-    })
+  try {
+    if (typeof pathOrRegex === "string") {
+      imps = file.getImportDeclarations().filter(cond => {
+        return cond.getModuleSpecifierValue() === pathOrRegex;
+      });
+    } else {
+      imps = file.getImportDeclarations().filter(cond => {
+        return pathOrRegex.test(cond.getModuleSpecifierValue());
+      });
+    }
+  } catch(e) {
+    throw e;
   }
 
-  return imps.length > 0 ? imps : undefined;
+  return imps;
 }
 
 function repathImport(imp: ImportDeclaration, replacementString: string, regex?: RegExp) {
