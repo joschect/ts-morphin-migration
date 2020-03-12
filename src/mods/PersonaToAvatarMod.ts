@@ -1,12 +1,7 @@
 import {
   SourceFile,
-  JsxAttributeStructure,
   SyntaxKind,
   JsxSpreadAttribute,
-  VariableDeclaration,
-  VariableDeclarationList,
-  VariableStatement,
-  ParameterDeclaration,
   VariableDeclarationKind,
   ts,
   Node
@@ -140,42 +135,7 @@ export function RenamePrimaryTextProp(file: SourceFile) {
                 switch (def[0].getKind()) {
                   case ts.ScriptElementKind.constElement:
                   case ts.ScriptElementKind.letElement:
-                  case ts.ScriptElementKind.variableElement: {
-                    // We are explicitly looking for the declaration of this const, variable, or let
-                    const node = def[0].getDeclarationNode();
-                    if (
-                      node &&
-                      node.getKind() === SyntaxKind.VariableDeclaration
-                    ) {
-                      const tDef = node as VariableDeclaration;
-
-                      const st = tDef.getStructure();
-                      const par = tDef.getParent().getParent();
-                      if (par.getKind() === SyntaxKind.VariableStatement) {
-                        if (
-                          !(par as VariableStatement).getFirstDescendant(
-                            val => {
-                              return (
-                                val.getKind() === SyntaxKind.Identifier &&
-                                val.getText() === "__migPersonaProps"
-                              );
-                            }
-                          )
-                        ) {
-                          (par as VariableStatement).addDeclaration({
-                            name: `{primaryText, ...__migPersonaProps}`,
-                            initializer: st.name
-                          });
-                        }
-                        id.replaceWithText("__migPersonaProps");
-                        val.addAttribute({
-                          name: "text",
-                          initializer: "{primaryText}"
-                        });
-                      }
-                    }
-                    break;
-                  }
+                  case ts.ScriptElementKind.variableElement:
                   case ts.ScriptElementKind.parameterElement: {
                     const tDef = def[0];
                     const bl = getBlockContainer(val);
@@ -184,15 +144,13 @@ export function RenamePrimaryTextProp(file: SourceFile) {
                     if (insIndex === undefined) {
                       throw "asdfasdf";
                     }
-
                     if (!p?.getVariableStatement("__migPersonaProps")) {
-                      console.log("inserting");
                       p?.insertVariableStatement(insIndex, {
+                        declarationKind: VariableDeclarationKind.Const,
                         declarations: [
                           {
                             name: "{primaryText, ...__migPersonaProps}",
-                            initializer: tDef.getName(),
-                            type: VariableDeclarationKind.Const
+                            initializer: tDef.getName()
                           }
                         ]
                       });

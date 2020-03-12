@@ -50,6 +50,7 @@ describe("Rename Persona Props test", () => {
   it("can replace jsx spread primaryText", () => {
     const file = project.getSourceFileOrThrow("mPersonaSpreadProps.tsx");
     RenamePrimaryTextProp(file);
+    console.log(file.getText())
     const els = utilities.findJsxTagInFile(file, "Persona");
     els.forEach(val => {
       val.getAttributes().forEach(att => {
