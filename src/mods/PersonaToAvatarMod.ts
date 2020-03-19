@@ -8,7 +8,7 @@ import {
   ts,
   Node
 } from "ts-morph";
-import { utilities } from "../utilities";
+import { utilities } from "../utilities/utilities";
 
 const personaPath = "office-ui-fabric-react/lib/Persona";
 

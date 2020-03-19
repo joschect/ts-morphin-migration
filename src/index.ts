@@ -1,6 +1,6 @@
 import { Project } from "ts-morph";
 import { CommandParser } from "./command";
-import {utilities} from "./utilities";
+import {utilities} from "./utilities/utilities";
 import {RepathOufrImports} from './mods/RenameImport';
 
 const command = new CommandParser().parseArgs(process.argv);

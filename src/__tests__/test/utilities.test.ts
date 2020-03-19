@@ -1,4 +1,4 @@
-import { utilities } from "../../utilities";
+import { utilities } from "../../utilities/utilities";
 import { Project, SourceFile } from "ts-morph";
 import { JSXNames } from "../mock/mockFunction";
 

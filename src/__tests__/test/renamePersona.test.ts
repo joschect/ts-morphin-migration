@@ -10,7 +10,7 @@ import {
   ReplaceIPersonaPropsImport,
   ReplacePersonaSizeImport
 } from "../../mods/PersonaToAvatarMod";
-import { utilities } from "../../utilities";
+import { utilities } from "../../utilities/utilities";
 const personaPath = "/**/__tests__/mock/**/persona/**/*.tsx";
 
 describe("Rename Persona", () => {
