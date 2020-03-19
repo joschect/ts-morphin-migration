@@ -9,13 +9,15 @@ import {
   JsxSpreadAttribute
 } from "ts-morph";
 import {
-    RenameRenderPersonaCoin,
     RenamePrimaryTextProp,
     RenameRenderCoin
 } from "../../mods/PersonaToAvatarMod";
 import { utilities } from "../../utilities";
 const personaPath = "/**/__tests__/mock/**/persona/**/*.tsx";
 // @TODO ensure that props are not renamed for non fabric personas if they exist
+
+const personaPropsFile = "mPersonaProps.tsx";
+const personaSpreadPropsFile = "mPersonaSpreadProps.tsx";
 
 describe("Rename Persona Props test", () => {
   let project: Project;
@@ -35,7 +37,7 @@ describe("Rename Persona Props test", () => {
   });
 
   it("can replace jsx inline primaryText without changing the value", () => {
-    const file = project.getSourceFileOrThrow("mPersonaProps.tsx");
+    const file = project.getSourceFileOrThrow(personaPropsFile);
     const values = utilities.findJsxTagInFile(file, "Persona");
     const attValues = values.map(val => {
       return (((val.getAttribute("primaryText")?.getStructure()) as JsxAttributeStructure)?.initializer)
@@ -48,9 +50,8 @@ describe("Rename Persona Props test", () => {
   });
 
   it("can replace jsx spread primaryText", () => {
-    const file = project.getSourceFileOrThrow("mPersonaSpreadProps.tsx");
+    const file = project.getSourceFileOrThrow(personaSpreadPropsFile);
     RenamePrimaryTextProp(file);
-    console.log(file.getText())
     const els = utilities.findJsxTagInFile(file, "Persona");
     els.forEach(val => {
       val.getAttributes().forEach(att => {
@@ -62,6 +63,15 @@ describe("Rename Persona Props test", () => {
           });
         }
       })
-    })
+    });
+  });
+  
+  it("can replace personaCoin render", () => {
+    const file = project.getSourceFileOrThrow(personaPropsFile);
+    RenameRenderCoin(file);
+    const els = utilities.findJsxTagInFile(file, "Persona");
+    els.forEach(val => {
+      expect(val.getAttribute("onRenderCoin")).toBeFalsy();
+    });
   });
 });

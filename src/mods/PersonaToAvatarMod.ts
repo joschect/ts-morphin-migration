@@ -3,6 +3,8 @@ import {
   SyntaxKind,
   JsxSpreadAttribute,
   VariableDeclarationKind,
+  JsxOpeningElement,
+  JsxSelfClosingElement,
   ts,
   Node
 } from "ts-morph";
@@ -33,6 +35,71 @@ export function AppendNamedImportIfNoExist(
       namedImports
     });
   }
+}
+
+export function renameProperty(elements: (JsxOpeningElement | JsxSelfClosingElement)[], attributeName: string, attributeReplacement: string) {
+  elements.forEach(val => {
+    let att = val.getAttribute(attributeName);
+    if (att) {
+      att.set({ name: attributeReplacement });
+    } else {
+      const atts = val.getAttributes();
+      atts.forEach(a => {
+        if (a.getKind() === SyntaxKind.JsxSpreadAttribute) {
+          const id = (a as JsxSpreadAttribute).getFirstChildByKind(
+            SyntaxKind.Identifier
+          );
+          if (id) {
+            // If the type of the property has the attribute that we are looking for, then do what needs to be done.
+            if (
+              id
+                .getType()
+                .getProperties()
+                .some(typeVal => {
+                  return typeVal.getName() === attributeName;
+                })
+            ) {
+              const def = id.getDefinitions();
+              if (def.length === 1) {
+                switch (def[0].getKind()) {
+                  case ts.ScriptElementKind.constElement:
+                  case ts.ScriptElementKind.letElement:
+                  case ts.ScriptElementKind.variableElement:
+                  case ts.ScriptElementKind.parameterElement: {
+                    const tDef = def[0];
+                    const bl = getBlockContainer(val);
+                    const p = bl?.getParentIfKind(SyntaxKind.Block);
+                    const insIndex = bl?.getChildIndex();
+                    if (insIndex === undefined) {
+                      throw "unable to find child index";
+                    }
+                    if (!p?.getVariableStatement("__migPersonaProps")) {
+                      p?.insertVariableStatement(insIndex, {
+                        declarationKind: VariableDeclarationKind.Const,
+                        declarations: [
+                          {
+                            name: `{${attributeName}, ...__migPersonaProps}`,
+                            initializer: tDef.getName()
+                          }
+                        ]
+                      });
+                    }
+
+                    id.replaceWithText("__migPersonaProps");
+                    val.addAttribute({
+                      name: attributeReplacement,
+                      initializer: `{${attributeName}}`
+                    });
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  });
 }
 
 export function ReplacePersonaImport(file: SourceFile) {
@@ -109,68 +176,13 @@ function getBlockContainer(node: Node<ts.Node>) {
 export function RenamePrimaryTextProp(file: SourceFile) {
   // Should this fix the naming if the Persona Component has already been renamed to Avatar
   const elements = utilities.findJsxTagInFile(file, "Persona");
-  elements.forEach(val => {
-    let att = val.getAttribute("primaryText");
-    if (att) {
-      att.set({ name: "text" });
-    } else {
-      const atts = val.getAttributes();
-      atts.forEach(a => {
-        if (a.getKind() === SyntaxKind.JsxSpreadAttribute) {
-          const id = (a as JsxSpreadAttribute).getFirstChildByKind(
-            SyntaxKind.Identifier
-          );
-          if (id) {
-            // If the type of the property has the attribute that we are looking for, then do what needs to be done.
-            if (
-              id
-                .getType()
-                .getProperties()
-                .some(typeVal => {
-                  return typeVal.getName() === "primaryText";
-                })
-            ) {
-              const def = id.getDefinitions();
-              if (def.length === 1) {
-                switch (def[0].getKind()) {
-                  case ts.ScriptElementKind.constElement:
-                  case ts.ScriptElementKind.letElement:
-                  case ts.ScriptElementKind.variableElement:
-                  case ts.ScriptElementKind.parameterElement: {
-                    const tDef = def[0];
-                    const bl = getBlockContainer(val);
-                    const p = bl?.getParentIfKind(SyntaxKind.Block);
-                    const insIndex = bl?.getChildIndex();
-                    if (insIndex === undefined) {
-                      throw "asdfasdf";
-                    }
-                    if (!p?.getVariableStatement("__migPersonaProps")) {
-                      p?.insertVariableStatement(insIndex, {
-                        declarationKind: VariableDeclarationKind.Const,
-                        declarations: [
-                          {
-                            name: "{primaryText, ...__migPersonaProps}",
-                            initializer: tDef.getName()
-                          }
-                        ]
-                      });
-                    }
-
-                    id.replaceWithText("__migPersonaProps");
-                    val.addAttribute({
-                      name: "text",
-                      initializer: "{primaryText}"
-                    });
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-  });
+  renameProperty(elements, "primaryText", "text");
+  
 }
-export function RenameRenderPersonaCoin(file: SourceFile) {}
-export function RenameRenderCoin(file: SourceFile) {}
+
+export function RenameRenderCoin(file: SourceFile) {
+  // Should this fix the naming if the Persona Component has already been renamed to Avatar
+
+  const elements = utilities.findJsxTagInFile(file, "Persona");
+  renameProperty(elements, "onRenderCoin", "onRenderAvatarCoin");
+}
