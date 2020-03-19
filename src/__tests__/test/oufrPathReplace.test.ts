@@ -1,5 +1,5 @@
 import { Project } from "ts-morph";
-import { RepathOufrImports } from "../../mods/RenameImport";
+import { RepathOfficeToFluentImports } from "../../mods/OfficeToFluentImportMod";
 
 const basicFileName = "mockImports.tsx";
 const edgeCaseFile = "mockEdgeImports.tsx";
@@ -18,7 +18,7 @@ describe("Import Utilities test", () => {
 
   it("Can remove all old paths in one file", () => {
     const file = project.getSourceFileOrThrow(basicFileName);
-    RepathOufrImports(file);
+    RepathOfficeToFluentImports(file);
 
     file.getImportStringLiterals().forEach(val => {
       const impPath = val.getLiteralValue();
@@ -32,7 +32,7 @@ describe("Import Utilities test", () => {
       return val.getLiteralValue();
     });
 
-    RepathOufrImports(file);
+    RepathOfficeToFluentImports(file);
     const newImpList = file.getImportStringLiterals();
     expect(
       newImpList.some(val => val.getLiteralValue().indexOf(newRoot) > -1)
@@ -50,7 +50,7 @@ describe("Import Utilities test", () => {
       return val.getLiteralValue();
     });
 
-    RepathOufrImports(file);
+    RepathOfficeToFluentImports(file);
     const newImpList = file.getImportStringLiterals();
     newImpList.forEach((val, index) => {
       const indexOfOld: number = oldImportList[index].indexOf(oldRoot)
@@ -70,7 +70,7 @@ describe("Import Utilities test", () => {
       return val.getLiteralValue();
     });
 
-    RepathOufrImports(file);
+    RepathOfficeToFluentImports(file);
     const newImpList = file.getImportStringLiterals();
     expect(
       newImpList.some(val => val.getLiteralValue().indexOf(newRoot) > -1)
