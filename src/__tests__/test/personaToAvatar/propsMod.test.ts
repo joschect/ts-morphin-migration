@@ -11,15 +11,15 @@ import {
 import {
     RenamePrimaryTextProp,
     RenameRenderCoin
-} from "../../mods/PersonaToAvatarMod";
-import { utilities } from "../../utilities/utilities";
+} from "../../../mods/PersonaToAvatarMod";
+import { utilities } from "../../../utilities/utilities";
 const personaPath = "/**/__tests__/mock/**/persona/**/*.tsx";
 // @TODO ensure that props are not renamed for non fabric personas if they exist
 
 const personaPropsFile = "mPersonaProps.tsx";
 const personaSpreadPropsFile = "mPersonaSpreadProps.tsx";
 
-describe("Rename Persona Props test", () => {
+describe("Persona props mod tests", () => {
   let project: Project;
 
   beforeEach(() => {

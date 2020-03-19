@@ -1,12 +1,12 @@
-import { utilities } from "../../utilities/utilities";
+import { utilities } from "../../../utilities/utilities";
 import { Project, SourceFile } from "ts-morph";
-import { JSXNames } from "../mock/mockFunction";
+import { JSXNames } from "../../mock/mockFunction";
 
 const project = new Project();
 project.addSourceFilesAtPaths(`${process.cwd()}/**/__tests__/mock/**/*.tsx`);
 const fileName = "mockFunction.tsx";
 
-describe("utilities test", () => {
+describe("JSX Utilities Test", () => {
   it("can find a regular jsx tag", () => {
     const tag = utilities.findJsxTagInFile(
       project.getSourceFileOrThrow(fileName),

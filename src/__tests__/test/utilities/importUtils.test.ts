@@ -1,4 +1,4 @@
-import { utilities } from "../../utilities/utilities";
+import { utilities } from "../../../utilities/utilities";
 import { Project } from "ts-morph";
 
 const fileName = "mockImports.tsx";

@@ -9,11 +9,11 @@ import {
   ReplacePersonaImport,
   ReplaceIPersonaPropsImport,
   ReplacePersonaSizeImport
-} from "../../mods/PersonaToAvatarMod";
-import { utilities } from "../../utilities/utilities";
+} from "../../../mods/PersonaToAvatarMod";
+import { utilities } from "../../../utilities/utilities";
 const personaPath = "/**/__tests__/mock/**/persona/**/*.tsx";
 
-describe("Rename Persona", () => {
+describe("Persona component mod tests", () => {
   let project: Project;
 
   beforeEach(() => {
