@@ -24,6 +24,8 @@
     "@types/react": "^16.9.23",
     "office-ui-fabric-react": "^7.98.3",
     "react": "^16.13.0",
-    "ts-morph": "^7.0.0"
+    "ts-morph": "^7.0.0",
+    "minimist": "^1.2.2",
+    "acorn": "^6.4.1"
   }
 }
