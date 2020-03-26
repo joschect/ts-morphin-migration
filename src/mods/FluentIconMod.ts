@@ -18,7 +18,7 @@ export function renameIconString(file: SourceFile) {
       if(att!.getKind() !== SyntaxKind.JsxSpreadAttribute) {
         const tAtt = att! as JsxAttribute;
         const exp = tAtt.getChildrenOfKind(SyntaxKind.JsxExpression)[0];
-          tAtt.setInitializer('{<SomeStringIcon/>}');
+        tAtt.setInitializer('{<SomeStringIcon/>}');
       }
     }
   });
