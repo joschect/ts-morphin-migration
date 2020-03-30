@@ -26,6 +26,7 @@ const convertToCamelCase = (iconName: string) => {
 
 // <Button icon={'some-string'}/> -> <Button icon={<SomeString/>}/>
 export function renameIconString(file: SourceFile) {
+  // TODO: expand on more components
   const elements = utilities.findJsxTagInFile(file, 'Button');
   const iconNames: string[] = [];
 
@@ -65,6 +66,8 @@ export function renameIconString(file: SourceFile) {
                 const stringLiteral = name.getChildrenOfKind(SyntaxKind.StringLiteral)[0];
                 if (stringLiteral) {
                   iconName = stringLiteral.getLiteralValue();
+                } else {
+                  // TODO: name can come from a local variable..
                 }
                 // remove it from the object literal
                 (name as any).remove();
@@ -103,6 +106,7 @@ export function renameIconString(file: SourceFile) {
     }
   });
 
+  // TODO: remove duplicates from iconNames
   if(iconNames.length > 0) {
     file.addImportDeclaration({
       namedImports: iconNames,
