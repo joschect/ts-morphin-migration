@@ -1,10 +1,5 @@
 import {
-  Project,
-  SyntaxKind,
-  InterfaceDeclaration,
-  TypeReferenceNode,
-  PropertyAccessExpression,
-  JsxAttribute
+  Project
 } from "ts-morph";
 import { renameIconString } from "../../../mods/FluentIconMod";
 import { utilities } from "../../../utilities/utilities";
@@ -22,8 +17,14 @@ describe("Can rename icon to icon component", () => {
     const file = project.getSourceFileOrThrow("buttonIcon.tsx");
     renameIconString(file);
     let elements = utilities.findJsxTagInFile(file, "Button");
-    elements.forEach(imp => {
-      expect((imp.getAttribute("icon")?.getStructure() as any).initializer).not.toEqual('{\'some-string\'}');
+
+    elements.forEach((imp, idx) => {
+      if(idx == 0) {
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<SomeString />}');
+      }
+      if(idx == 1) {
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<Play {...{outline: true }} />}');
+      }
     });
   });
 });

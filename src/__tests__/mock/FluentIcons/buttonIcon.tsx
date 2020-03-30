@@ -4,7 +4,10 @@ export function Button(props: any){
 }
 
 export function ButtonWithIcon() {
-    return <Button icon={'some-string'}>
-        asdf
-    </Button>
+    return (<>
+        <Button icon={'some-string'}>
+            asdf
+        </Button>
+        <Button icon={{name: 'play', outline: true }} content={"Play"} />
+        </>)
 }
