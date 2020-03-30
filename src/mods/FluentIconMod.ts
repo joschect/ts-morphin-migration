@@ -24,7 +24,7 @@ const convertToCamelCase = (iconName: string) => {
   return componentName;
 };
 
-// <Button icon={'some-string'}/> -> <Button icon={<SomeStringIcon/>}/>
+// <Button icon={'some-string'}/> -> <Button icon={<SomeString/>}/>
 export function renameIconString(file: SourceFile) {
   const elements = utilities.findJsxTagInFile(file, 'Button');
   const iconNames: string[] = [];
@@ -86,8 +86,10 @@ export function renameIconString(file: SourceFile) {
     }
   });
 
-  file.addImportDeclaration({
-    namedImports: iconNames,
-    moduleSpecifier: '@fluentui/react-icons-northstar'
-  });
+  if(iconNames.length > 0) {
+    file.addImportDeclaration({
+      namedImports: iconNames,
+      moduleSpecifier: '@fluentui/react-icons-northstar'
+    });
+  }
 }
