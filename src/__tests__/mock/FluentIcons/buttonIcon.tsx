@@ -9,5 +9,6 @@ export function ButtonWithIcon() {
             asdf
         </Button>
         <Button icon={{name: 'play', outline: true }} content={"Play"} />
+        <Button icon={{name: 'powerpoint', outline: true }} content={"PowerPoint"} />
         </>)
 }

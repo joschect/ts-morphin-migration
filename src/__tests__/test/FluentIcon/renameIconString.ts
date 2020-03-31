@@ -20,10 +20,13 @@ describe("Can rename icon to icon component", () => {
 
     elements.forEach((imp, idx) => {
       if(idx == 0) {
-        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<SomeString />}');
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<SomeStringIcon />}');
       }
       if(idx == 1) {
-        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<Play {...{outline: true }} />}');
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<PlayIcon {...{outline: true }} />}');
+      }
+      if(idx == 2) {
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<PowerPointIcon {...{outline: true }} />}');
       }
     });
   });

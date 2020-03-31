@@ -5,7 +5,29 @@ import {
 } from "ts-morph";
 import { utilities } from "../utilities/utilities";
 
-const convertToCamelCase = (iconName: string) => {
+const inconsistentNames: any = {};
+
+inconsistentNames['icon-circle'] = "CircleIcon";
+inconsistentNames['chevron-right-medium'] = "ChevronEndMediumIcon";
+inconsistentNames['triangle-right'] = "TriangleEndIcon";
+inconsistentNames['onenote'] = "OneNoteIcon";
+inconsistentNames['onenote-color'] = "OneNoteColorIcon";
+inconsistentNames['onedrive'] = 'OneDriveIcon';
+inconsistentNames['powerpoint'] = "PowerPointIcon";
+inconsistentNames['powerpoint-color'] = "PowerPointColorIcon";
+inconsistentNames['icon-checkmark'] = "AcceptIcon";
+inconsistentNames['icon-circle'] = "CircleIcon";
+inconsistentNames['icon-close'] = "CloseIcon";
+inconsistentNames['icon-arrow-up'] = "TriangleUpIcon";
+inconsistentNames['icon-arrow-down'] = "TriangleDownIcon";
+inconsistentNames['icon-arrow-end'] = "TriangleEndIcon";
+inconsistentNames['icon-menu-arrow-down'] = "ChevronDownMediumIcon";
+inconsistentNames['icon-menu-arrow-end'] = "ChevronEndMediumIcon";
+inconsistentNames['icon-pause'] = "PauseIcon";
+inconsistentNames['icon-play'] = "PlayIcon";
+
+const convertNameToIconComponentName = (iconName: string) => {
+  if(inconsistentNames[iconName]) return inconsistentNames[iconName];
   let componentName = "";
   let convertToUpperCase = true;
   for(let i=0; i<iconName.length; i++) {
@@ -21,13 +43,13 @@ const convertToCamelCase = (iconName: string) => {
     }
   }
 
-  return componentName;
+  return componentName + "Icon";
 };
 
-// <Button icon={'some-string'}/> -> <Button icon={<SomeString/>}/>
+// <Button icon={'some-string'}/>] =  <Button icon={<SomeString/>}/>
 export function renameIconString(file: SourceFile) {
-  // TODO: expand on more components
-  const elements = utilities.findJsxTagInFile(file, 'Button');
+
+  const elements = utilities.findJsxTagInFile(file, 'Button', 'Reaction', 'MenuItem', 'Menu.Item', 'Status', 'Attachment', 'Input', 'ToolbarMenuItem', 'Label', 'Alert', 'ToolbarItem', 'DropdownSelectedItem');
   const iconNames: string[] = [];
 
   console.log("Processing file " + file.getBaseName());
@@ -48,7 +70,7 @@ export function renameIconString(file: SourceFile) {
 
             const iconName = stringLiteral.getLiteralValue();
 
-            let ComponentName = convertToCamelCase(iconName);
+            let ComponentName = convertNameToIconComponentName(iconName);
             iconNames.push(ComponentName); // add icons for creating import statements
 
             tAtt.setInitializer(`{<${ComponentName} />}`);
@@ -73,7 +95,7 @@ export function renameIconString(file: SourceFile) {
                 (name as any).remove();
               }
 
-              let ComponentName = convertToCamelCase(iconName);
+              let ComponentName = convertNameToIconComponentName(iconName);
               iconNames.push(ComponentName); // add icons for creating import statements
 
               // tAtt.setInitializer(`{<${ComponentName} {...${JSON.stringify(spreadObj)}} />}`);
@@ -95,7 +117,7 @@ export function renameIconString(file: SourceFile) {
 
             const iconName = stringLiteral.getLiteralValue();
 
-            let ComponentName = convertToCamelCase(iconName);
+            let ComponentName = convertNameToIconComponentName(iconName);
             iconNames.push(ComponentName); // add icons for creating import statements
 
             tAtt.setInitializer(`{<${ComponentName} />}`);
@@ -106,10 +128,12 @@ export function renameIconString(file: SourceFile) {
     }
   });
 
-  // TODO: remove duplicates from iconNames
-  if(iconNames.length > 0) {
+  // remove duplicates
+  const filteredIconNames = iconNames.filter((name, idx) => iconNames.indexOf(name) === idx);
+
+  if(filteredIconNames.length > 0) {
     file.addImportDeclaration({
-      namedImports: iconNames,
+      namedImports: filteredIconNames,
       moduleSpecifier: '@fluentui/react-icons-northstar'
     });
   }

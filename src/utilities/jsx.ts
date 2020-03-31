@@ -13,7 +13,7 @@ export function findJsxTag(files: SourceFile[], tag: string) {
   });
 }
 
-export function findJsxTagInFile(file: SourceFile, tag: string) {
+export function findJsxTagInFile(file: SourceFile, ...tags: string[]) {
   let instances: (JsxOpeningElement | JsxSelfClosingElement)[] = [];
     file.forEachDescendant( val => {
     switch (val.getKind()) {
@@ -21,7 +21,7 @@ export function findJsxTagInFile(file: SourceFile, tag: string) {
       case SyntaxKind.JsxSelfClosingElement: {
 
         if (
-          (val as JsxOpeningElement | JsxSelfClosingElement).getTagNameNode().getText() === tag
+          tags.includes((val as JsxOpeningElement | JsxSelfClosingElement).getTagNameNode().getText())
         ) {
         instances.push(val as JsxSelfClosingElement | JsxOpeningElement);
         }
