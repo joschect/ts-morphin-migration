@@ -1,7 +1,7 @@
 import {
   Project
 } from "ts-morph";
-import { convertIconProp, convertIconInShorthandProp } from "../../../mods/FluentIconMod";
+import { convertIconProp, convertIconInShorthandProp, convertIconComponent } from "../../../mods/FluentIconMod";
 import { utilities } from "../../../utilities/utilities";
 const buttonPAth = "/**/__tests__/mock/**/FluentIcons/**/*.tsx";
 
@@ -28,6 +28,15 @@ describe("Can rename icon to icon component", () => {
       if(idx == 2) {
         expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{<PowerPointIcon {...{outline: true }} />}');
       }
+      if(idx == 3) {
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{icon}');
+      }
+      if(idx == 4) {
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual('{{name: icon, outline: true}}');
+      }
+      if(idx == 5) {
+        expect((imp.getAttribute("icon")?.getStructure() as any).initializer).toEqual("{{name: icon ? 'this' : 'that', outline: true}}");
+      }
     });
   });
 
@@ -37,9 +46,9 @@ describe("Can rename icon to icon component", () => {
     let elements = utilities.findJsxTagInFile(file, "ButtonGroup");
 
     elements.forEach((imp, idx) => {
-      // if(idx == 0) {
-      //   expect((imp.getAttribute("buttons")?.getStructure() as any).initializer).toEqual('{<SomeStringIcon />}');
-      // }
+      if(idx == 0) {
+        expect((imp.getAttribute("buttons")?.getStructure() as any).initializer).toEqual('{[{\n            icon: <PlayIcon {...{outline: true, tabindex: 0}} />\n    }]}');
+      }
       // TODO: add test
       // if(idx == 1) {
       //   expect((imp.getAttribute("buttons")?.getStructure() as any).initializer).toEqual('{<SomeStringIcon />}');
@@ -49,4 +58,26 @@ describe("Can rename icon to icon component", () => {
       // }
     });
   });
+
+  it("replace icon component with name to correct Icon", () => {
+    const file = project.getSourceFileOrThrow("icon.tsx");
+    convertIconComponent(file);
+    let elements = utilities.findJsxTagInFile(file, "SomeStringIcon");
+
+    elements.forEach((imp, idx) => {
+      if(idx == 0) {
+        expect((imp.getText())).toEqual('<SomeStringIcon outline xSpacing="none"/>');
+      }
+      if(idx == 1) {
+        expect(imp.getText()).toEqual('<SomeStringIcon outline={false} xSpacing="none"/>');
+      }
+      if(idx == 2) {
+        expect(imp.getText()).toEqual('<SomeStringIcon outline xSpacing="none"/>');
+      }
+      if(idx == 3) {
+        expect(imp.getText()).toEqual('<SomeStringIcon />');
+      }
+    });
+  });
+
 });
