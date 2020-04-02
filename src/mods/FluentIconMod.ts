@@ -1,9 +1,13 @@
 import {
+  ArrayLiteralExpression, Identifier,
+  JsxAttribute,
+  JsxExpression,
+  ObjectLiteralExpression,
   SourceFile,
-  SyntaxKind,
-  JsxAttribute
+  StructureKind,
+  SyntaxKind
 } from "ts-morph";
-import { utilities } from "../utilities/utilities";
+import {utilities} from "../utilities/utilities";
 
 const inconsistentNames: any = {};
 
@@ -27,12 +31,12 @@ inconsistentNames['icon-pause'] = "PauseIcon";
 inconsistentNames['icon-play'] = "PlayIcon";
 
 const convertNameToIconComponentName = (iconName: string) => {
-  if(inconsistentNames[iconName]) return inconsistentNames[iconName];
+  if (inconsistentNames[iconName]) return inconsistentNames[iconName];
   let componentName = "";
   let convertToUpperCase = true;
-  for(let i=0; i<iconName.length; i++) {
-    if(iconName[i] !== '-'){
-      if(convertToUpperCase) {
+  for (let i = 0; i < iconName.length; i++) {
+    if (iconName[i] !== '-') {
+      if (convertToUpperCase) {
         convertToUpperCase = false;
         componentName += iconName[i].toUpperCase();
       } else {
@@ -47,26 +51,26 @@ const convertNameToIconComponentName = (iconName: string) => {
 };
 
 // <Button icon={'some-string'}/>] =  <Button icon={<SomeString/>}/>
-export function renameIconString(file: SourceFile) {
+export function convertIconProp(file: SourceFile) {
 
-  const elements = utilities.findJsxTagInFile(file, 'Button', 'Reaction', 'MenuItem', 'Menu.Item', 'Status', 'Attachment', 'Input', 'ToolbarMenuItem', 'Label', 'Alert', 'ToolbarItem', 'DropdownSelectedItem');
+  const elements = utilities.findJsxTagInFile(file, 'Button', 'Reaction', 'MenuItem', 'Menu.Item', 'Status', 'Attachment', 'Input', 'ToolbarMenuItem', 'Toolbar.MenuItem', 'Label', 'Alert', 'ToolbarItem', 'Toolbar.Item', 'DropdownSelectedItem');
   const iconNames: string[] = [];
 
   console.log("Processing file " + file.getBaseName());
 
   elements.forEach(val => {
     const att = val.getAttribute('icon');
-    if(!!att) {
-      if(att!.getKind() !== SyntaxKind.JsxSpreadAttribute) {
+    if (!!att) {
+      if (att!.getKind() !== SyntaxKind.JsxSpreadAttribute) {
         const tAtt = att! as JsxAttribute;
 
         const exp = tAtt.getChildrenOfKind(SyntaxKind.JsxExpression)[0];
 
-        if(!!exp) {
+        if (!!exp) {
           // Icon as string
           const stringLiteral = exp.getChildrenOfKind(SyntaxKind.StringLiteral)[0];
 
-          if(!!stringLiteral) {
+          if (!!stringLiteral) {
 
             const iconName = stringLiteral.getLiteralValue();
 
@@ -131,7 +135,135 @@ export function renameIconString(file: SourceFile) {
   // remove duplicates
   const filteredIconNames = iconNames.filter((name, idx) => iconNames.indexOf(name) === idx);
 
-  if(filteredIconNames.length > 0) {
+  if (filteredIconNames.length > 0) {
+    file.addImportDeclaration({
+      namedImports: filteredIconNames,
+      moduleSpecifier: '@fluentui/react-icons-northstar'
+    });
+  }
+}
+
+// <ButtonGroup buttons={[{icon: 'some-string'}]} />] =  <Button buttons={[{icon: <SomeString/>}]}/>
+export function convertIconInShorthandProp(file: SourceFile) {
+  const mapComponentToPropName: any = {
+    'ButtonGroup': 'buttons',
+    'Button.Group': 'buttons',
+    'Menu': 'items',
+    'Toolbar': 'items',
+  };
+
+  const elements = utilities.findJsxTagInFile(file, 'ButtonGroup', 'Button.Group', 'Menu', 'Toolbar');
+  const iconNames: string[] = [];
+
+  console.log("Processing file " + file.getBaseName());
+
+  elements.forEach(val => {
+    const tag = (val as any).getStructure().name;
+    const att = val.getAttribute(mapComponentToPropName[tag]);
+    if (!!att) {
+      if (att!.getKind() !== SyntaxKind.JsxSpreadAttribute) {
+        const tAttr = att as JsxAttribute;
+        if (!!tAttr) {
+          const expressions = tAttr.getChildrenOfKind(SyntaxKind.JsxExpression) as JsxExpression[];
+          if (!!expressions && expressions.length > 0) {
+            const jsxExp = expressions[0];
+
+            let arrayExpressions = null;
+            const identifier = jsxExp.getChildrenOfKind(SyntaxKind.Identifier)[0] as Identifier;
+            if(!!identifier) {
+              const declarationNode = identifier.getDefinitions()[0].getDeclarationNode();
+              if (declarationNode) {
+                arrayExpressions = declarationNode.getChildrenOfKind(SyntaxKind.ArrayLiteralExpression);
+              }
+            } else {
+              arrayExpressions = jsxExp.getChildrenOfKind(SyntaxKind.ArrayLiteralExpression);
+            }
+            if (!!arrayExpressions && arrayExpressions.length > 0) {
+              const arrayExp = arrayExpressions[0] as ArrayLiteralExpression;
+
+              //iterate trough children
+              arrayExp.forEachChild(child => {
+
+                if(child.getKind() == SyntaxKind.ObjectLiteralExpression) {
+                  // Icon as object
+                  const objectLiteral = child as ObjectLiteralExpression;
+
+                  if (!!objectLiteral) {
+                    let iconName = "";
+
+                    const icon = objectLiteral.getProperty('icon');
+
+                    if(!!icon) {
+                      // TODO: add object handling...
+                      const stringLiteral = icon.getChildrenOfKind(SyntaxKind.StringLiteral)[0];
+                      if (!!stringLiteral) {
+                        iconName = stringLiteral.getLiteralValue();
+                        let ComponentName = convertNameToIconComponentName(iconName);
+                        iconNames.push(ComponentName); // add icons for creating import statements
+                        objectLiteral.insertProperty(0, {
+                          kind: StructureKind.PropertyAssignment,
+                          name: 'icon',
+                          initializer: `<${ComponentName} />`
+                        });
+                        // remove it from the object literal
+                        (icon as any).remove();
+                      } else {
+                        // Icon as object
+                        const iconObjectLiteral = icon.getChildrenOfKind(SyntaxKind.ObjectLiteralExpression)[0];
+
+                        if (!!iconObjectLiteral) {
+                          let iconName = "";
+
+                          const name = iconObjectLiteral.getProperty('name');
+
+                          if (!!name) {
+                            // save the name
+                            const stringLiteral = name.getChildrenOfKind(SyntaxKind.StringLiteral)[0];
+                            if (stringLiteral) {
+                              iconName = stringLiteral.getLiteralValue();
+                            } else {
+                              // TODO: name can come from a local variable..
+                            }
+                            // remove it from the object literal
+                            (name as any).remove();
+                          }
+
+                          let ComponentName = convertNameToIconComponentName(iconName);
+                          iconNames.push(ComponentName); // add icons for creating import statements
+
+                          // tAtt.setInitializer(`{<${ComponentName} {...${JSON.stringify(spreadObj)}} />}`);
+
+                          // Figure out a better way...
+                          let initializer = "";
+                          initializer += `<${ComponentName} {...`;
+                          initializer += iconObjectLiteral.getText();
+                          initializer += '} />';
+
+                          objectLiteral.insertProperty(0, {
+                            kind: StructureKind.PropertyAssignment,
+                            name: 'icon',
+                            initializer,
+                          });
+                          // remove it from the object literal
+                          (icon as any).remove();
+                        }
+                      }
+
+                    }
+                  }
+                }
+              })
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // remove duplicates
+  const filteredIconNames = iconNames.filter((name, idx) => iconNames.indexOf(name) === idx);
+
+  if (filteredIconNames.length > 0) {
     file.addImportDeclaration({
       namedImports: filteredIconNames,
       moduleSpecifier: '@fluentui/react-icons-northstar'
