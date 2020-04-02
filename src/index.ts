@@ -2,7 +2,7 @@ import { Project } from "ts-morph";
 import { CommandParser } from "./command";
 import {utilities} from "./utilities/utilities";
 // import {RepathOfficeToFluentImports} from './mods/OfficeToFluentImportMod';
-import {convertIconProp, convertIconInShorthandProp, convertIconComponent} from './mods/FluentIconMod';
+import {convertIconProp, convertIconInShorthandProp, convertIconComponent} from './mods/fluent-icon-mod/FluentIconMod';
 
 const command = new CommandParser().parseArgs(process.argv);
 if (command.shouldExit) {

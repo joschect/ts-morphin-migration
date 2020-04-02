@@ -1,7 +1,7 @@
 import {
   Project
 } from "ts-morph";
-import { convertIconProp, convertIconInShorthandProp, convertIconComponent } from "../../../mods/FluentIconMod";
+import { convertIconProp, convertIconInShorthandProp, convertIconComponent } from "../../../mods/fluent-icon-mod/FluentIconMod";
 import { utilities } from "../../../utilities/utilities";
 const buttonPAth = "/**/__tests__/mock/**/FluentIcons/**/*.tsx";
 
