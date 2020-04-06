@@ -45,9 +45,11 @@ const addFilteredIconNames = (iconNames: string[], file: SourceFile) => {
   }
 };
 
+const isValidIconName = (iconName: string) => iconName && iconName.length > 0 && iconName.indexOf(" ") < 0;
+
 const updateIconComponentFromStringLiteral = (stringLiteral: StringLiteral, iconNames: string[], tAtt: JsxAttribute) => {
   const iconName = stringLiteral.getLiteralValue();
-  if (iconName && iconName.length > 0) {
+  if (isValidIconName(iconName)) {
     let ComponentName = convertNameToIconComponentName(iconName);
     iconNames.push(ComponentName);
 
@@ -100,7 +102,7 @@ export function convertIconProp(file: SourceFile) {
                 }
               }
 
-              if (iconName && iconName.length > 0) {
+              if (isValidIconName(iconName)) {
                 let ComponentName = convertNameToIconComponentName(iconName);
 
                 iconNames.push(ComponentName);
@@ -188,7 +190,7 @@ export function convertIconInShorthandProp(file: SourceFile) {
                       if (!!stringLiteral) {
                         iconName = stringLiteral.getLiteralValue();
 
-                        if (iconName && iconName.length > 0) {
+                        if (isValidIconName(iconName)) {
                           let ComponentName = convertNameToIconComponentName(iconName);
                           iconNames.push(ComponentName);
                           objectLiteral.insertProperty(0, {
@@ -221,7 +223,7 @@ export function convertIconInShorthandProp(file: SourceFile) {
                             }
                           }
 
-                          if (iconName && iconName.length > 0) {
+                          if (isValidIconName(iconName)) {
                             let ComponentName = convertNameToIconComponentName(iconName);
                             iconNames.push(ComponentName);
 
@@ -286,7 +288,7 @@ export function convertIconComponent(file: SourceFile) {
         const iconName = stringLiteral.getLiteralValue();
         let ComponentName = "";
 
-        if (iconName && iconName.length > 0) {
+        if (isValidIconName(iconName)) {
           ComponentName = convertNameToIconComponentName(iconName);
           iconNames.push(ComponentName);
         }
