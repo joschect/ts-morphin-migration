@@ -1,14 +1,19 @@
 import { ICodeMod } from '../codeMods/ICodeMod';
 import {Glob} from 'glob';
-import {SemVer, Range} from 'semver'
+import {Range} from 'semver'
 
 // TODO ensure that async for all these utilities works
-export function runMods<T>(codeMods: ICodeMod<T>[], sources: T[]) {
+export function runMods<T>(codeMods: ICodeMod<T>[], sources: T[], loggingCallback: (result: {mod: ICodeMod<T>, file: T, error?: Error}) => void) {
   for(let file of sources) {
     // Run every mod on each file?
     // I like that
     for(let mod of codeMods) {
-      mod.run(file);
+      try {
+        mod.run(file);
+        loggingCallback({ mod, file });
+      } catch (e) {
+        loggingCallback({ mod, file, error: e });
+      }
     }
   }
 }
@@ -36,6 +41,9 @@ export function getModsPaths(root: string = getModsRootPath(), modsPath: string 
   return glob.found;
 }
 
+// Note, this root will be wherever the npx command is run from.
+// For now it will need to be run at the root of the project/monorepo
+
 export function getTsConfigs(root: string = process.cwd()) {
   const glob = new Glob('/**/tsconfig.json', {
     absolute: false,
@@ -61,7 +69,10 @@ export function loadMod(path: string, errorCallback: (e: Error) => void): {succe
 }
 
 export function filterMods(codeMods: ICodeMod<any>[], semvarRange: Range) {
-  return codeMods.filter((mod)=> {
-    return semvarRange.test(mod.version);
-  })
+  return codeMods.filter((mod) => shouldRunMod(mod, semvarRange));
+}
+
+// Defaults to allowing almost any version to run.
+export function shouldRunMod(mod: ICodeMod<any>, semvarRange: Range = new Range('>0 <1000')) {
+    return mod.enabled && semvarRange.test(mod.version);
 }

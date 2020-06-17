@@ -68,7 +68,7 @@ describe("modRunner tests", () => {
         version: "1.1.1",
       },
     ];
-    runMods(mods, [""]);
+    runMods(mods, [""], ()=> void 0);
     expect(runCount).toEqual(3);
   });
 
@@ -83,10 +83,12 @@ describe("modRunner tests", () => {
         run: runcallBack,
         version: "1.1.1",
       },
+      // This is the only valid mod, it's both enabled and has the appropriate version
       {
         name: "b",
         run: runcallBack,
         version: "2.1.1",
+        enabled: true
       },
       {
         name: "c",
@@ -96,6 +98,6 @@ describe("modRunner tests", () => {
     ];
 
     let filtered = filterMods(mods, new Range(">1.0.0 <=3.0.0"));
-    expect(filtered.length).toEqual(2);
+    expect(filtered.length).toEqual(1);
   });
 });

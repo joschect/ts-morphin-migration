@@ -2,7 +2,7 @@ import {
   runMods,
   getModsPaths,
   getTsConfigs,
-  filterMods,
+  shouldRunMod,
   loadMod,
 } from "./modRunner/runnerUtilities";
 import { Project } from "ts-morph";
@@ -18,8 +18,9 @@ export function upgrade() {
         console.error(e);
       });
     })
-    .filter((result) => result.success)
+    .filter((result) => result.success && shouldRunMod(result.mod!))
     .map((mod) => mod.mod!);
+  
   console.log('getting configs')
   let configs = getTsConfigs();
   let projects: Project[] = configs.map(
@@ -29,9 +30,14 @@ export function upgrade() {
   projects.forEach((project) => {
     let error = false;
     try {
-      console.log(`getting files from project`)
       let files = project.getSourceFiles();
-      runMods(mods, files);
+      runMods(mods, files, (result)=> {
+        if(result.error) {
+          console.error(`Error running mod ${result.mod.name} on file ${result.file.getBaseName()}`, result.error);
+        } else {
+          console.log(`Upgraded file ${result.file.getBaseName()} with mod ${result.mod.name}`);
+        }
+      });
     } catch (e) {
       console.error(e);
       error = true;
