@@ -1,4 +1,4 @@
-import { CommandParser, CommandParserResult } from "../../command";
+import { CommandParser, CommandParserResult } from "../../../command";
 
 describe("command parser", () => {
   describe("help and usage", () => {

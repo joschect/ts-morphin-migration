@@ -9,6 +9,7 @@ import {
   Node
 } from "ts-morph";
 import { utilities } from "../utilities/utilities";
+import {ICodeMod} from '../ICodeMod';
 
 const personaPath = "office-ui-fabric-react/lib/Persona";
 
@@ -186,3 +187,24 @@ export function RenameRenderCoin(file: SourceFile) {
   const elements = utilities.findJsxTagInFile(file, "Persona");
   renameProperty(elements, "onRenderCoin", "onRenderAvatarCoin");
 }
+
+
+const PersonaToAvatarMod: ICodeMod = {
+  run: (file: SourceFile) => {
+    try {
+    ReplacePersonaImport(file);
+    ReplaceIPersonaPropsImport(file);
+    ReplacePersonaSizeImport(file);
+    RenamePrimaryTextProp(file);
+    RenameRenderCoin(file);
+    } catch(e) {
+      return {success: false};
+    }
+    return {success: true};
+  },
+  version: '100000',
+  name: 'PersonaToAvatar',
+  enabled: false
+}
+
+export default PersonaToAvatarMod;

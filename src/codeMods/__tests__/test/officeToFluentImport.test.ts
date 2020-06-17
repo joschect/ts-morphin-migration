@@ -1,5 +1,5 @@
 import { Project } from "ts-morph";
-import { RepathOfficeToFluentImports } from "../../mods/OfficeToFluentImportMod";
+import RepathOfficeToFluentImports from "../../mods/OfficeToFluentImportMod";
 
 const basicFileName = "mockImports.tsx";
 const edgeCaseFile = "mockEdgeImports.tsx";
@@ -18,7 +18,7 @@ describe("Office to Fluent import repath tests", () => {
 
   it("Can remove all old paths in one file", () => {
     const file = project.getSourceFileOrThrow(basicFileName);
-    RepathOfficeToFluentImports(file);
+    RepathOfficeToFluentImports.run(file);
 
     file.getImportStringLiterals().forEach(val => {
       const impPath = val.getLiteralValue();
@@ -32,7 +32,7 @@ describe("Office to Fluent import repath tests", () => {
       return val.getLiteralValue();
     });
 
-    RepathOfficeToFluentImports(file);
+    RepathOfficeToFluentImports.run(file);
     const newImpList = file.getImportStringLiterals();
     expect(
       newImpList.some(val => val.getLiteralValue().indexOf(newRoot) > -1)
@@ -50,7 +50,7 @@ describe("Office to Fluent import repath tests", () => {
       return val.getLiteralValue();
     });
 
-    RepathOfficeToFluentImports(file);
+    RepathOfficeToFluentImports.run(file);
     const newImpList = file.getImportStringLiterals();
     newImpList.forEach((val, index) => {
       const indexOfOld: number = oldImportList[index].indexOf(oldRoot)
@@ -70,7 +70,7 @@ describe("Office to Fluent import repath tests", () => {
       return val.getLiteralValue();
     });
 
-    RepathOfficeToFluentImports(file);
+    RepathOfficeToFluentImports.run(file);
     const newImpList = file.getImportStringLiterals();
     expect(
       newImpList.some(val => val.getLiteralValue().indexOf(newRoot) > -1)
