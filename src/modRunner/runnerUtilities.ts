@@ -19,7 +19,8 @@ export function runMods<T>(codeMods: ICodeMod<T>[], sources: T[], loggingCallbac
 }
 
 export function getModsRootPath() {
-  // This function will always be hosed just under the folder modRunner.
+  // This function always needs to be in a folder that is a sibling
+  // of codeMods.
   return `${__dirname}/../codeMods/mods`;
 }
 
@@ -62,7 +63,7 @@ export function loadMod(path: string, errorCallback: (e: Error) => void): {succe
     let mod = require(path).default;
     return {success: true, mod};
   } catch (e) {
-    errorCallback(e)
+    errorCallback(e);
   }
 
   return {success: false}

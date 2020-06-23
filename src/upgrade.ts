@@ -34,6 +34,7 @@ export function upgrade() {
       runMods(mods, files, (result)=> {
         if(result.error) {
           console.error(`Error running mod ${result.mod.name} on file ${result.file.getBaseName()}`, result.error);
+          error = true;
         } else {
           console.log(`Upgraded file ${result.file.getBaseName()} with mod ${result.mod.name}`);
         }
