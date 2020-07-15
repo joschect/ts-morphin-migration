@@ -1,5 +1,6 @@
 const inconsistentIconNames: any = {};
 
+inconsistentIconNames['chevron-left'] = "ChevronStartIcon";
 inconsistentIconNames['chevron-right-medium'] = "ChevronEndMediumIcon";
 inconsistentIconNames['triangle-right'] = "TriangleEndIcon";
 inconsistentIconNames['onenote'] = "OneNoteIcon";

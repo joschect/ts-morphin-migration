@@ -16,5 +16,6 @@ const files = project.getSourceFiles();
 // utilities.applyCodeMods(files, RepathOfficeToFluentImports);
 utilities.applyCodeMods(files, convertIconProp);
 utilities.applyCodeMods(files, convertIconInShorthandProp);
-utilities.applyCodeMods(files, convertIconComponent);
+// This is the one we already run for the <Icon /> replacements
+// utilities.applyCodeMods(files, convertIconComponent);
 project.save();

@@ -40,7 +40,7 @@ const addFilteredIconNames = (iconNames: string[], file: SourceFile) => {
   if (filteredIconNames.length > 0) {
     file.addImportDeclaration({
       namedImports: filteredIconNames,
-      moduleSpecifier: '@fluentui/react-icons-northstar'
+      moduleSpecifier: '@msteams/components-fluent-ui-icons'
     });
   }
 };
