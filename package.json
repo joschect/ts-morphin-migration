@@ -24,7 +24,7 @@
     "@types/react": "^16.9.23",
     "@types/semver": "^7.1.0",
     "acorn": "^6.4.1",
-    "minimist": "^1.2.2",
+    "minimist": "^1.2.6",
     "office-ui-fabric-react": "^7.98.3",
     "react": "^16.13.0",
     "semver": "^7.3.2",
